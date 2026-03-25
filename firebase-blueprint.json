@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "Workflow": {
+      "title": "Workflow",
+      "description": "A visual workflow for connecting APIs and managing data flows.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique ID of the workflow" },
+        "name": { "type": "string", "description": "Name of the workflow" },
+        "nodes": { "type": "array", "description": "React Flow nodes configuration" },
+        "edges": { "type": "array", "description": "React Flow edges configuration" },
+        "uid": { "type": "string", "description": "Owner's user ID" },
+        "createdAt": { "type": "number", "description": "Creation timestamp" }
+      },
+      "required": ["id", "name", "nodes", "edges", "uid", "createdAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "A product synced from an external API.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "price": { "type": "number" },
+        "description": { "type": "string" },
+        "image": { "type": "string" },
+        "category": { "type": "string" },
+        "uid": { "type": "string" }
+      },
+      "required": ["id", "title", "price", "uid"]
+    }
+  },
+  "firestore": {
+    "/workflows/{workflowId}": {
+      "schema": "Workflow",
+      "description": "User created workflows"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Synced products for the storefront"
+    }
+  }
+}

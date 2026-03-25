@@ -1,0 +1,5 @@
+{
+  "name": "FlowCommerce",
+  "description": "A visual workflow builder for connecting e-commerce APIs and managing data flows through a node-based diagram.",
+  "requestFramePermissions": []
+}

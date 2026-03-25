@@ -1,0 +1,58 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: workflows
+    // Fields: id, name, nodes, edges, uid, createdAt
+    //
+    // Collection: products
+    // Fields: id, title, price, description, image, category, uid
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function isValidWorkflow(data) {
+      return data.id is string && 
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.nodes is list &&
+             data.edges is list &&
+             data.uid == request.auth.uid;
+    }
+
+    function isValidProduct(data) {
+      return data.id is string &&
+             data.title is string && data.title.size() > 0 &&
+             data.price is number &&
+             data.uid == request.auth.uid;
+    }
+
+    match /workflows/{workflowId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && isValidWorkflow(request.resource.data);
+      allow update: if isDocOwner() && isValidWorkflow(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /products/{productId} {
+      allow read: if isAuthenticated(); // Allow all authenticated users to see products for storefront
+      allow create: if isAuthenticated() && isValidProduct(request.resource.data);
+      allow update: if isDocOwner() && isValidProduct(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+  }
+}
